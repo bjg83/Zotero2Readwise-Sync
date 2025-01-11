@@ -25,7 +25,7 @@ jobs:
         run: pip install zotero2readwise
 
       - name: 📥 Download the Python script needed for automation
-        run:  curl https://raw.githubusercontent.com/e-alizadeh/Zotero2Readwise/master/zotero2readwise/run.py -o run.py
+        run:  curl https://raw.githubusercontent.com/bjg83/Zotero2Readwise/refs/heads/master/zotero2readwise/run.py -o run.py
       
       - name: 🚀 Run Automation
         run: python run.py ${{ secrets.READWISE_TOKEN }} ${{ secrets.ZOTERO_KEY }} ${{ secrets.ZOTERO_ID }}
