@@ -31,3 +31,6 @@ jobs:
       
       - name: 🚀 Run Automation
         run: python run.py ${{ secrets.READWISE_TOKEN }} ${{ secrets.ZOTERO_KEY }} ${{ secrets.ZOTERO_ID }}
+
+        - name: 📄 Output failed Zotero items
+        run: cat /opt/hostedtoolcache/Python/3.9.21/x64/lib/python3.9/site-packages/zotero2readwise/failed_zotero_items.json
