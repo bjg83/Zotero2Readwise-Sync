@@ -8,6 +8,7 @@ on:
     - cron: "0 * * * *" # Runs every hour (Check https://crontab.guru/)
 
 jobs:
+if: false  # This disables the entire workflow
   zotero-to-readwise-automation:
     runs-on: ubuntu-latest
     steps:
