@@ -24,7 +24,7 @@ jobs:
       - name: 💿 Install your modified Zotero2Readwise package and pyzotero 1.6.9
         run: |
           pip install pyzotero==1.6.9
-          pip install git+https://github.com/ncarboni/Zotero2ReadwiseMod.git
+          pip install git+https://github.com/e-alizadeh/Zotero2Readwise.git
 
       - name: 📥 Download the Python script needed for automation
         run:  curl https://raw.githubusercontent.com/bjg83/Zotero2Readwise/refs/heads/master/zotero2readwise/run.py -o run.py
