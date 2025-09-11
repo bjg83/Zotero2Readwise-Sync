@@ -5,7 +5,7 @@ on:
     branches:
       - master
   schedule:
-    - cron: "0 * * * *" # Runs every hour (Check https://crontab.guru/)
+    - cron: "0 * * * *"
 
 jobs:
   zotero-to-readwise-automation:
@@ -27,10 +27,18 @@ jobs:
           pip install git+https://github.com/e-alizadeh/Zotero2Readwise.git
 
       - name: 📥 Download the Python script needed for automation
-        run:  curl https://raw.githubusercontent.com/e-alizadeh/Zotero2Readwise/master/zotero2readwise/run.py -o run.py
-      
-      - name: 🚀 Run Automation
-        run: python run.py ${{ secrets.READWISE_TOKEN }} ${{ secrets.ZOTERO_KEY }} ${{ secrets.ZOTERO_ID }}
+        run: curl https://raw.githubusercontent.com/e-alizadeh/Zotero2Readwise/master/zotero2readwise/run.py -o run.py
+
+      - name: 🚀 Run Automation and capture output
+        run: |
+          python run.py ${{ secrets.READWISE_TOKEN }} ${{ secrets.ZOTERO_KEY }} ${{ secrets.ZOTERO_ID }} > run_output.log 2>&1
+          cat run_output.log
 
       - name: 📄 Output failed Zotero items
-        run: cat /opt/hostedtoolcache/Python/3.9.21/x64/lib/python3.9/site-packages/zotero2readwise/failed_zotero_items.json
+        run: cat /opt/hostedtoolcache/Python/3.9.21/x64/lib/python3.9/site-packages/zotero2readwise/failed_zotero_items.json || echo "No failed_zotero_items.json file found."
+
+      - name: 📤 Upload output log
+        uses: actions/upload-artifact@v4
+        with:
+          name: run_output_log
+          path: run_output.log
