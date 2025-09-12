@@ -43,9 +43,10 @@ jobs:
           name: run_output_log
           path: run_output.log
 
-      - name: 📤 Upload error log (if exists)
+      - name: 📤 Upload error log
         uses: actions/upload-artifact@v4
         with:
           name: run_error_log
           path: run_error.log
+        if: always()
         continue-on-error: true
