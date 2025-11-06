@@ -39,11 +39,7 @@ jobs:
 
       - name: 📄 Output failed Zotero items
         run: |
-          FILE=$(python - <<'PY'
-import zotero2readwise, os
-print(os.path.join(os.path.dirname(zotero2readwise.__file__), 'failed_zotero_items.json'))
-PY
-)
+          FILE=$(python -c 'import zotero2readwise, os; print(os.path.join(os.path.dirname(zotero2readwise.__file__), "failed_zotero_items.json"))')
           if [ -f "$FILE" ]; then
             echo "Found failed_zotero_items.json at $FILE"
             cat "$FILE"
