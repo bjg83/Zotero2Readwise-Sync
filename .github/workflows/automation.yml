@@ -16,47 +16,41 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: 🐍 Set up Python 3.12
+      - name: 🐍 Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.11'
 
       - name: 💿 Install your modified Zotero2Readwise package and pyzotero 1.6.9
         run: |
+          python -V
           pip install --upgrade pip
-          pip install pyzotero==1.6.9
-          pip install git+https://github.com/e-alizadeh/Zotero2Readwise.git
+          pip install -v pyzotero==1.6.9
+          pip install -v git+https://github.com/e-alizadeh/Zotero2Readwise.git
 
       - name: 📥 Download the Python script needed for automation
-        run: curl https://raw.githubusercontent.com/e-alizadeh/Zotero2Readwise/master/zotero2readwise/run.py -o run.py
+        run: curl -fSL https://raw.githubusercontent.com/e-alizadeh/Zotero2Readwise/master/zotero2readwise/run.py -o run.py
 
       - name: 🚀 Run Automation and capture output
         run: |
-          python run.py ${{ secrets.READWISE_TOKEN }} ${{ secrets.ZOTERO_KEY }} ${{ secrets.ZOTERO_ID }} > run_output.log 2> run_error.log
-          cat run_output.log || true
+          set -o pipefail
+          python -u run.py "${{ secrets.READWISE_TOKEN }}" "${{ secrets.ZOTERO_KEY }}" "${{ secrets.ZOTERO_ID }}" > run_output.log 2> run_error.log || true
+          echo "===== STDOUT ====="
+          sed -n '1,200p' run_output.log || true
           echo "===== STDERR ====="
-          cat run_error.log || true
-
-      - name: 📄 Output failed Zotero items
-        run: |
-          FILE=$(python -c 'import zotero2readwise, os; print(os.path.join(os.path.dirname(zotero2readwise.__file__), "failed_zotero_items.json"))')
-          if [ -f "$FILE" ]; then
-            echo "Found failed_zotero_items.json at $FILE"
-            cat "$FILE"
-          else
-            echo "No failed_zotero_items.json file found at $FILE"
-          fi
+          sed -n '1,200p' run_error.log || true
 
       - name: 📤 Upload output log
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: run_output_log
           path: run_output.log
 
       - name: 📤 Upload error log
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: run_error_log
           path: run_error.log
-        if: always()
         continue-on-error: true
