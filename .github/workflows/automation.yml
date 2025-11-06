@@ -16,13 +16,14 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: 🐍 Set up Python 3.9
+      - name: 🐍 Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.12'
 
       - name: 💿 Install your modified Zotero2Readwise package and pyzotero 1.6.9
         run: |
+          pip install --upgrade pip
           pip install pyzotero==1.6.9
           pip install git+https://github.com/e-alizadeh/Zotero2Readwise.git
 
@@ -31,11 +32,24 @@ jobs:
 
       - name: 🚀 Run Automation and capture output
         run: |
-          python run.py ${{ secrets.READWISE_TOKEN }} ${{ secrets.ZOTERO_KEY }} ${{ secrets.ZOTERO_ID }} > run_output.log 2>&1
-          cat run_output.log
+          python run.py ${{ secrets.READWISE_TOKEN }} ${{ secrets.ZOTERO_KEY }} ${{ secrets.ZOTERO_ID }} > run_output.log 2> run_error.log
+          cat run_output.log || true
+          echo "===== STDERR ====="
+          cat run_error.log || true
 
       - name: 📄 Output failed Zotero items
-        run: cat /opt/hostedtoolcache/Python/3.9.21/x64/lib/python3.9/site-packages/zotero2readwise/failed_zotero_items.json || echo "No failed_zotero_items.json file found."
+        run: |
+          FILE=$(python - <<'PY'
+import zotero2readwise, os
+print(os.path.join(os.path.dirname(zotero2readwise.__file__), 'failed_zotero_items.json'))
+PY
+)
+          if [ -f "$FILE" ]; then
+            echo "Found failed_zotero_items.json at $FILE"
+            cat "$FILE"
+          else
+            echo "No failed_zotero_items.json file found at $FILE"
+          fi
 
       - name: 📤 Upload output log
         uses: actions/upload-artifact@v4
