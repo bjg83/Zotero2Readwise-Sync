@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
       - name: 💿 Install Zotero2Readwise Python package
         run: pip install git+https://github.com/e-alizadeh/Zotero2Readwise.git
