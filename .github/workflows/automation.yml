@@ -16,74 +16,16 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: 🐍 Set up Python (use same major used upstream)
+      - name: 🐍 Set up Python 3.9
         uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      - name: 💿 Install dependencies
-        run: |
-          python -V
-          pip install --upgrade pip setuptools wheel
-          pip install -v pyzotero==1.6.9
-          pip install -v git+https://github.com/e-alizadeh/Zotero2Readwise.git
+      - name: 💿 Install Zotero2Readwise Python package
+        run: pip install git+https://github.com/e-alizadeh/Zotero2Readwise.git
 
       - name: 📥 Download the Python script needed for automation
-        run: curl -fSL https://raw.githubusercontent.com/e-alizadeh/Zotero2Readwise/master/zotero2readwise/run.py -o run.py
-
-      - name: 🚀 Run automation, stream output to console and files (guarantee logs)
-        shell: bash
-        run: |
-          # ensure files are present
-          : > run_output.log
-          : > run_error.log
-
-          # Run script; tee stdout->run_output.log and stderr->run_error.log while streaming.
-          # Save exit code to a file so we can fail the job after uploads.
-          python -u run.py "${{ secrets.READWISE_TOKEN }}" "${{ secrets.ZOTERO_KEY }}" "${{ secrets.ZOTERO_ID }}" \
-            > >(tee -a run_output.log) 2> >(tee -a run_error.log >&2) || echo "$?" > rc.txt
-
-      - name: 📄 Show small snippet of logs in workflow console
-        if: always()
-        run: |
-          echo "=== STDOUT (head) ==="
-          head -n 200 run_output.log || true
-          echo "=== STDERR (head) ==="
-          head -n 200 run_error.log || true
-
-      - name: 📄 Output failed Zotero items (if present)
-        if: always()
-        run: |
-          FILE=$(python -c 'import zotero2readwise, os; print(os.path.join(os.path.dirname(zotero2readwise.__file__), "failed_zotero_items.json"))' 2>/dev/null || echo "")
-          if [ -n "$FILE" ] && [ -f "$FILE" ]; then
-            echo "Found failed_zotero_items.json at $FILE"
-            cat "$FILE"
-          else
-            echo "No failed_zotero_items.json file found at $FILE"
-          fi
-
-      - name: 📤 Upload output log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: run_output_log
-          path: run_output.log
-
-      - name: 📤 Upload error log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: run_error_log
-          path: run_error.log
-
-      - name: ❌ Fail job if script failed (preserve artifact upload)
-        if: always()
-        run: |
-          RC=0
-          if [ -f rc.txt ]; then RC=$(cat rc.txt); fi
-          if [ "$RC" -ne 0 ]; then
-            echo "Script exit code: $RC"
-            exit $RC
-          else
-            echo "Script exit code: 0"
-          fi
+        run:  curl https://raw.githubusercontent.com/e-alizadeh/Zotero2Readwise/master/zotero2readwise/run.py -o run.py
+      
+      - name: 🚀 Run Automation
+        run: python run.py ${{ secrets.READWISE_TOKEN }} ${{ secrets.ZOTERO_KEY }} ${{ secrets.ZOTERO_ID }}
