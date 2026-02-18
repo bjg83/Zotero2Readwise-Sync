@@ -20,4 +20,11 @@ jobs:
           READWISE_TOKEN: ${{ secrets.READWISE_TOKEN }}
           ZOTERO_KEY: ${{ secrets.ZOTERO_KEY }}
           ZOTERO_LIBRARY_ID: ${{ secrets.ZOTERO_ID }}
-        run: uvx zotero2readwise
+        run: |
+          for i in {1..3}; do
+            uvx zotero2readwise && break
+            if [ $i -lt 3 ]; then
+              echo "Attempt $i failed, retrying in 30 seconds..."
+              sleep 30
+            fi
+          done
