@@ -26,5 +26,8 @@ jobs:
             if [ $i -lt 3 ]; then
               echo "Attempt $i failed, retrying in 30 seconds..."
               sleep 30
+            else
+              echo "All 3 attempts failed. Exiting."
+              exit 1
             fi
           done
