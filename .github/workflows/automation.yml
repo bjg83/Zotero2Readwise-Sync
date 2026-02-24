@@ -12,6 +12,9 @@ jobs:
   zotero-to-readwise-automation:
     runs-on: ubuntu-latest
     steps:
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v4
+
       - name: 🐍 Install uv
         uses: astral-sh/setup-uv@v4
 
@@ -20,4 +23,12 @@ jobs:
           READWISE_TOKEN: ${{ secrets.READWISE_TOKEN }}
           ZOTERO_KEY: ${{ secrets.ZOTERO_KEY }}
           ZOTERO_LIBRARY_ID: ${{ secrets.ZOTERO_ID }}
-        run: uvx zotero2readwise
+        run: uvx --from . zotero2readwise --use_since --batch_size 500 --recent_first y
+
+      - name: 💾 Save library version for next run
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "chore: update zotero library version after sync"
+          git push
