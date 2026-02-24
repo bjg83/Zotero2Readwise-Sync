@@ -21,6 +21,9 @@ jobs:
           repository: bjg83/Zotero2Readwise
           path: Zotero2Readwise
 
+      - name: 🧹 Remove nested .git to prevent submodule warning
+        run: rm -rf Zotero2Readwise/.git
+
       - name: 🐍 Install uv
         uses: astral-sh/setup-uv@v4
 
@@ -35,6 +38,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add since
           git diff --cached --quiet || git commit -m "chore: update zotero library version after sync"
           git push
