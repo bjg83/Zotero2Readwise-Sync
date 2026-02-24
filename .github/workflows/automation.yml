@@ -12,8 +12,14 @@ jobs:
   zotero-to-readwise-automation:
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Checkout repo
+      - name: 📥 Checkout sync repo
         uses: actions/checkout@v4
+
+      - name: 📥 Checkout Zotero2Readwise fork
+        uses: actions/checkout@v4
+        with:
+          repository: YOUR_USERNAME/Zotero2Readwise
+          path: Zotero2Readwise
 
       - name: 🐍 Install uv
         uses: astral-sh/setup-uv@v4
@@ -23,7 +29,7 @@ jobs:
           READWISE_TOKEN: ${{ secrets.READWISE_TOKEN }}
           ZOTERO_KEY: ${{ secrets.ZOTERO_KEY }}
           ZOTERO_LIBRARY_ID: ${{ secrets.ZOTERO_ID }}
-        run: uvx --from . zotero2readwise --use_since --batch_size 500 --recent_first y
+        run: uvx --from ./Zotero2Readwise zotero2readwise --use_since --batch_size 500 --recent_first y
 
       - name: 💾 Save library version for next run
         run: |
