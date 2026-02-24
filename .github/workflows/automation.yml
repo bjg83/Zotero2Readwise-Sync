@@ -18,7 +18,7 @@ jobs:
       - name: 📥 Checkout Zotero2Readwise fork
         uses: actions/checkout@v4
         with:
-          repository: YOUR_USERNAME/Zotero2Readwise
+          repository: bjg83/Zotero2Readwise
           path: Zotero2Readwise
 
       - name: 🐍 Install uv
