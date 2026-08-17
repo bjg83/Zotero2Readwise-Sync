@@ -36,6 +36,9 @@ jobs:
           ZOTERO_LIBRARY_ID: ${{ secrets.ZOTERO_ID }}
         run: uvx --from ./Zotero2Readwise zotero2readwise --use_since --batch_size 500 --recent_first y
 
+       - name: 🔧 Apply automation patches (state + upsert + reconcile)
+        run: chmod +x patches/apply_patches.sh ./patches/apply_patches.sh 
+
       - name: 💾 Save library version for next run
         run: |
           git config user.name "github-actions[bot]"
