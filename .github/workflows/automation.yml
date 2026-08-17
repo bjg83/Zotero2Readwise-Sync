@@ -26,11 +26,6 @@ jobs:
       - name: 🧹 Remove nested .git to prevent submodule warning
         run: rm -rf Zotero2Readwise/.git
 
-      - name: 🔧 Apply automation patches (state + upsert + reconcile)
-        run: |
-          chmod +x patches/apply_patches.sh
-          ./patches/apply_patches.sh
-
       - name: 🐍 Install uv
         uses: astral-sh/setup-uv@v6
 
@@ -39,13 +34,7 @@ jobs:
           READWISE_TOKEN: ${{ secrets.READWISE_TOKEN }}
           ZOTERO_KEY: ${{ secrets.ZOTERO_KEY }}
           ZOTERO_LIBRARY_ID: ${{ secrets.ZOTERO_ID }}
-          # Optional override for state DB path (default: ~/.zotero2readwise/state.db)
-          ZOTERO2READWISE_STATE_DB: ${{ secrets.ZOTERO2READWISE_STATE_DB }}
-          # Enable reconcile mode by default to avoid duplicates (set to false to disable)
-          ZOTERO2READWISE_RECONCILE: true
-        run: |
-          # uvx will use the patched Readwise module copied by apply_patches.sh
-          uvx --from ./Zotero2Readwise zotero2readwise --use_since --batch_size 500 --recent_first y
+        run: uvx --from ./Zotero2Readwise zotero2readwise --use_since --batch_size 500 --recent_first y
 
       - name: 💾 Save library version for next run
         run: |
