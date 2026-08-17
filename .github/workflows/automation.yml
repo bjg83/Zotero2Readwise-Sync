@@ -44,6 +44,7 @@ jobs:
           # Enable reconcile mode by default to avoid duplicates (set to false to disable)
           ZOTERO2READWISE_RECONCILE: true
         run: |
+          # uvx will use the patched Readwise module copied by apply_patches.sh
           uvx --from ./Zotero2Readwise zotero2readwise --use_since --batch_size 500 --recent_first y
     
       - name: 💾 Save library version for next run
