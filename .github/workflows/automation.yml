@@ -34,6 +34,29 @@ jobs:
           ZOTERO_LIBRARY_ID: ${{ secrets.ZOTERO_ID }}
         run: uvx --from ./Zotero2Readwise zotero2readwise --use_since --batch_size 500 --recent_first y
 
+      - name: 📦 Collect failed Zotero items
+        if: always()
+        run: |
+          failed_items="$(find "$RUNNER_TEMP/setup-uv-cache" -type f \
+            -path '*/site-packages/zotero2readwise/failed_zotero_items.json' \
+            -print -quit)"
+          if [ -n "$failed_items" ]; then
+            mkdir -p artifacts
+            cp "$failed_items" artifacts/failed_zotero_items.json
+            echo "Collected failed items JSON."
+          else
+            echo "No failed-items JSON was produced."
+          fi
+
+      - name: ⬆️ Upload failed Zotero items
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-zotero-items
+          path: artifacts/failed_zotero_items.json
+          if-no-files-found: warn
+          retention-days: 30
+
       - name: 💾 Save library version for next run
         run: |
           git config user.name "github-actions[bot]"
